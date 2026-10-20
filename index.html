@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>童貞免許証ジェネレーター</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f1ea;--fg:#222;--panel:#fff;--line:#ccc}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1b1d;--fg:#eee;--panel:#2a2a2d;--line:#444}}
+:root[data-theme="dark"]{--bg:#1b1b1d;--fg:#eee;--panel:#2a2a2d;--line:#444}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Hiragino Sans","Yu Gothic",sans-serif;padding:16px}
+main{max-width:520px;margin:0 auto}
+h1{font-size:20px;text-align:center;margin:8px 0 16px}
+.form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px}
+label{font-size:13px;display:grid;gap:4px}
+input,select,button{font:inherit;padding:9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);width:100%}
+button{background:#2b6e5a;color:#fff;border:0;font-weight:700;cursor:pointer}
+button.sub{background:#555;margin-top:6px}
+#out{display:none;margin-top:18px}
+.cap{font-size:12px;margin:14px 0 8px;opacity:.7;text-align:center}.flip{perspective:1200px;cursor:pointer}.in{position:relative;aspect-ratio:1.586;transition:transform .6s;transform-style:preserve-3d}.in.on{transform:rotateY(180deg)}
+.card{position:absolute;inset:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;container-type:inline-size;border-radius:3.5cqw;overflow:hidden;color:#1d2b3a;box-shadow:0 2px 10px #0004;font-size:3.2cqw}
+.front,.back{background:linear-gradient(135deg,var(--c1),var(--c2) 55%,var(--c3))}
+.back{transform:rotateY(180deg)}
+.bar{background:var(--bar);color:#fff;padding:1.4cqw 3cqw;display:flex;justify-content:space-between;font-weight:700;font-size:3.6cqw}
+.row{position:absolute;left:3cqw;right:3cqw}
+.ph{position:absolute;right:3cqw;top:14cqw;width:24cqw;height:30cqw;background:#cfd8d4;border:.3cqw solid #789;display:grid;place-items:center;font-size:3cqw;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover}
+.nm{font-size:6cqw;font-weight:700}
+.num{position:absolute;left:3cqw;bottom:1cqw;font-weight:700;letter-spacing:.3cqw}
+.neta{position:absolute;right:2.5cqw;bottom:1.5cqw;font-size:2.8cqw;font-weight:700;color:#b33}
+.slash{position:absolute;inset:0;display:none}
+.stamp{position:absolute;left:30cqw;top:26cqw;border:.8cqw solid #c22;color:#c22;font-size:11cqw;font-weight:900;padding:0 2cqw;transform:rotate(-14deg);display:none;background:#fff6}
+.k{opacity:.65;font-size:2.8cqw}
+.b{position:absolute;left:3cqw;right:3cqw;font-size:3cqw}
+.rank{font-size:7cqw;font-weight:900;color:var(--bar)}
+</style>
+</head>
+<body>
+<main>
+<h1>🪪 童貞免許証ジェネレーター</h1>
+<div class="form">
+<label>お名前<input id="name" placeholder="例:山田 太郎"></label>
+<label>生年月日<input id="birth" type="date"></label>
+<label>現在の状態
+<select id="st">
+<option value="active">童貞(現役)</option>
+<option value="plan">卒業見込(仮免許)</option>
+<option value="drop">中退(仮免許)</option>
+<option value="done">卒業済み(失効)</option>
+</select></label>
+<label>証明写真(端末内だけで処理されます)<input id="photo" type="file" accept="image/*"></label>
+<button id="go">免許証を発行する</button>
+</div>
+<div id="out">
+<div class="cap">タップで表裏を切り替え</div>
+<div class="flip" id="fl"><div class="in" id="in"><div class="card front" id="f"></div><div class="card back" id="b"></div></div></div>
+<button class="sub" data-t="f">表面を画像保存</button>
+<button class="sub" data-t="b">裏面を画像保存</button>
+</div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+var $=function(i){return document.getElementById(i)},img='';$('fl').onclick=function(){$('in').classList.toggle('on')};
+$('photo').onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){img=r.result};r.readAsDataURL(f)};
+function hash(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function fmt(d){return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日'}
+function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function age(b,n){var a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate()))a--;return a}
+function rank(a){return a<20?'見習い(初心者マーク)':a<25?'現役ルーキー':a<30?'ベテラン':a<35?'魔法使い':a<40?'大魔法使い':a<50?'賢者':'仙人(殿堂入り)'}
+var conds=['妄想力を要す','LINE未読に耐えること','深夜の自己啓発動画を控えること','週末の予定は空けておくこと','鏡の前で練習すること'];
+var klass=['普通童貞','大型童貞','中型童貞','原付童貞','二種童貞'];
+$('go').onclick=function(){
+ var nm=$('name').value.trim(),bs=$('birth').value;
+ if(!nm||!bs){alert('名前と生年月日を入力してください');return}
+ var b=new Date(bs),now=new Date(),a=age(b,now),st=$('st').value,h=hash(nm+bs);
+ var num=String(h).padStart(10,'0').slice(0,10)+String(hash(bs+nm)%100).padStart(2,'0');
+ var th=[20,25,30,35,40,50],nx=th.filter(function(t){return t>a})[0];
+ var expS=st==='done'?'失効':nx?fmt(new Date(b.getFullYear()+nx,b.getMonth(),b.getDate()))+'('+nx+'歳まで)':'殿堂入りにつき無期限';
+ var title={active:'童貞免許証',plan:'童貞仮免許証',drop:'童貞仮免許証',done:'童貞免許証'}[st];
+ var stT={active:'現役',plan:'卒業見込',drop:'中退',done:'卒業済み'}[st];
+ var rk=st==='done'?'OB・OG':st==='plan'?'仮免(路上教習中)':st==='drop'?'教習所中退':rank(a);
+ var cd=conds[h%conds.length],kl=klass[h%klass.length];var TT=[['グリーン','#d9efe6','#f6f3d8','#e3ecf8','#2b6e5a'],['ブルー','#d6e6fa','#eef3fb','#d9efe6','#2a5fa8'],['シルバー','#e4e6ea','#f7f8fa','#d5d9df','#5c6673'],['ゴールド','#f6e3a1','#fff6d6','#e8c764','#a8791a'],['プラチナ','#e6dcf6','#faf6ff','#cfd9f6','#6a4aa8'],['ダイヤ','#d9f3f7','#ffffff','#e6f0ff','#1b8aa8'],['レインボー','#ffd6e0','#fff8c9','#d4f5e2','#c23b7a']];var T=st==='done'?['失効','#e0e0e0','#efefef','#d0d0d0','#777']:TT[a<20?0:a<25?1:a<30?2:a<35?3:a<40?4:a<50?5:6];
+ var photo=img?'<img src="'+img+'">':'写真';
+ var slash='<svg class="slash" viewBox="0 0 100 63" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="63" stroke="#c22" stroke-width="1.2"/><line x1="0" y1="63" x2="100" y2="0" stroke="#c22" stroke-width="1.2"/></svg>';
+ $('f').innerHTML='<div class="bar"><span>'+title+(st==='done'?'':'('+T[0]+')')+'</span><span>日本童貞公安委員会</span></div>'+
+ '<div class="row" style="top:10.5cqw;right:30cqw"><div class="k">氏名</div><div class="nm">'+esc(nm)+'</div></div>'+
+ '<div class="row" style="top:24cqw;right:30cqw"><div class="k">生年月日</div>'+fmt(b)+'('+a+'歳)</div>'+
+ '<div class="row" style="top:32.5cqw;right:30cqw"><span class="k">交付</span> '+fmt(now)+'</div>'+
+ '<div class="row" style="top:38.5cqw;right:30cqw;font-size:2.7cqw;white-space:nowrap"><span class="k">有効期限</span> '+expS+'</div>'+
+ '<div class="row" style="top:45.5cqw"><span class="k">種類</span> '+kl+'　<span class="k">区分</span> '+stT+'</div>'+'<div class="row" style="top:49cqw"><span class="k">条件</span> '+cd+'</div>'+
+ '<div class="ph">'+photo+'</div><div class="num"><span class="k">判別番号</span> 第'+num+'号</div>'+
+ slash+'<div class="stamp">失効</div><div class="neta">ネタです</div>';
+ $('b').innerHTML='<div class="bar"><span>裏面</span><span>称号</span></div>'+
+ '<div class="b" style="top:14cqw"><div class="k">現在のランク</div><div class="rank">'+rk+'</div></div>'+
+ '<div class="b" style="top:30cqw"><span class="k">備考</span> '+(st==='done'?'卒業済みのため使用不可':st==='plan'?'本試験の結果待ち':st==='drop'?'再入校は随時受付':'年齢に応じて称号が上がります')+'</div>'+
+ '<div class="b" style="top:38cqw;border:.3cqw solid #789;padding:1cqw 2cqw">妄想提供意思表示欄:　提供する ・ 提供しない</div>'+
+ '<div class="b" style="top:49cqw"><span class="k">更新履歴</span> '+fmt(now)+' 新規交付</div>'+
+ '<div class="neta">ネタです</div>';
+ if(st==='done'){document.querySelectorAll('#f .slash,#f .stamp').forEach(function(e){e.style.display='block'})}
+ [$('f'),$('b')].forEach(function(e){e.style.setProperty('--c1',T[1]);e.style.setProperty('--c2',T[2]);e.style.setProperty('--c3',T[3]);e.style.setProperty('--bar',T[4])});$('in').classList.remove('on');$('out').style.display='block';
+ $('out').scrollIntoView({behavior:'smooth'});
+};
+document.querySelectorAll('button[data-t]').forEach(function(btn){btn.onclick=function(){
+ var el=$(btn.dataset.t);
+ var cl=el.cloneNode(true);cl.style.cssText='inset:auto;position:fixed;left:-9999px;top:0;transform:none;width:'+el.offsetWidth+'px;height:'+el.offsetHeight+'px';document.body.appendChild(cl);html2canvas(cl,{scale:2,backgroundColor:null}).then(function(c){cl.remove();var a=document.createElement('a');a.download='license-'+btn.dataset.t+'.png';a.href=c.toDataURL();a.click()})
+}});
+</script>
+</body>
+</html>
